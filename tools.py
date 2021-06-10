@@ -90,6 +90,18 @@ def noise(im):
     return s
 
 
+def plot_zernike(coeff): 
+    n = coeff.shape[0] 
+    index = np.arange(n) 
+    fig = plt.figure(figsize=(9, 6), dpi=80) 
+    width = 0.4 
+    for i in index:  
+        #xticklist.append('Z'+str(i+4))  
+        barfigure = plt.bar(index, coeff/(2*np.pi), width,color = '#2E9AFE',edgecolor = '#2E9AFE')  
+        plt.xticks(np.arange(1, 11, step=1)) 
+        plt.xlabel('Zernike Polynomials',fontsize=18) 
+        plt.ylabel('Coefficient [$\lambda$]',fontsize=18) 
+        plt.title('Zernike Polynomials Coefficients',fontsize=18)
 
 
 
