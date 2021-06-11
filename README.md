@@ -4,3 +4,6 @@ This rep contains a Python package that I have written for applying Phase Divers
 
 It is based on the algorithm described in [Löfdahl and Scharmer. 1994](http://adsabs.harvard.edu/full/1994A&AS..107..243L)
 
+```
+import numoy
+```
