@@ -15,7 +15,7 @@ The parameters needed for this class are:
 - `platescale`: the pixel size in arcseconds
 - `size`: the size of the detector in pixels
 
-This class allows the user to compute
+This class allows the user to compute:
 
 
 ## The `minimization` class:
