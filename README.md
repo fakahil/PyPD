@@ -22,8 +22,8 @@ This class allows the user to compute:
 
 This class allows the user to:
 
-1- Minimize the "Error Metric" and get the Zernike Polynomials describing the wavefront error of the telescope
-2- Plot the wavefront error, the point spreas function (PSF), the modulation transfer function (MTF), the 1D azimuthal MTF of the telescope 
-3- Construct the PSF and MTF from a set of Zernike Polynomials (from wavefront to PSF to OTF to MTF)
-4- Restore blurred images and correct for the PSF choosing between the Wiener filter and the Richardson-Lucy filter
-5- 
+1. Minimize the "Error Metric" and get the Zernike Polynomials describing the wavefront error of the telescope
+2. Plot the wavefront error, the point spreas function (PSF), the modulation transfer function (MTF), the 1D azimuthal MTF of the telescope 
+3. Construct the PSF and MTF from a set of Zernike Polynomials (from wavefront to PSF to OTF to MTF)
+4. Restore blurred images and correct for the PSF choosing between the Wiener filter and the Richardson-Lucy filter
+5. 
