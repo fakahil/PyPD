@@ -29,4 +29,3 @@ This class allows the user to:
 2. Plot the wavefront error, the point spreas function (PSF), the modulation transfer function (MTF), the 1D azimuthal MTF of the telescope 
 3. Construct the PSF and MTF from a set of Zernike Polynomials (from wavefront to PSF to OTF to MTF)
 4. Restore blurred images and correct for the PSF choosing between the Wiener filter and the Richardson-Lucy filter
-5. 
