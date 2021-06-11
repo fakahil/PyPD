@@ -6,10 +6,10 @@ It is based on the algorithm described in [Löfdahl and Scharmer. 1994](http://a
 
 # How to use the code?
 
-# The `Telescope` class:
+## The `Telescope` class:
 
 
-# The `minimization` class:
+## The `minimization` class:
 
 This class allows the user to:
 
