@@ -5,6 +5,7 @@ This repo contains a Python package that I have written for applying Phase Diver
 It is based on the algorithm described in [Löfdahl and Scharmer. 1994](http://adsabs.harvard.edu/full/1994A&AS..107..243L)
 
 # How to use the code?
+An important note here is to use a unified unit for all parameters (nm or m)
 
 ## The `Telescope` class:
 The parameters needed for this class are:
@@ -16,7 +17,9 @@ The parameters needed for this class are:
 - `size`: the size of the detector in pixels
 
 This class allows the user to compute:
-
+1. `calc_ps`: platescale in arcsec/pixel with an additional input of `pix_size` in units the same as the focal length
+2. `spatial_resolution`: the spatial resolution (Rayleigh limit)
+3. `pupil_size`: the size of the exit pupil of the system 
 
 ## The `minimization` class:
 
