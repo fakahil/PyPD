@@ -8,7 +8,7 @@ from scipy.signal import general_gaussian
 from astropy.io import fits
 from scipy import ndimage
 from functools import partial
-import time
+#import time
 import imreg_dft
 import pyfits
 import tools
