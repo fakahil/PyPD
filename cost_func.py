@@ -56,4 +56,4 @@ class fitting:
 	      E_metric = PD.Error_metric(t0,tk,d0,dk,q,noise_filter)
 	      L_m = PD.L_M(E_metric,size)
 	      return L_m
-   def run():
+  
