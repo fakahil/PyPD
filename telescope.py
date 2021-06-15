@@ -46,8 +46,8 @@ class Telescope(object):
         rpupil = self.nu_cutoff/(2*deltanu) 
         return np.int(rpupil)
 
-    def calc_plate_scale(self):
-        return 206265*self.pixel_size/self.focal_length
+    def spatial_resolution(self):
+        return self.diameter/self.lam
 
 '''
 def pupil_size(D,lam,pix,size):
