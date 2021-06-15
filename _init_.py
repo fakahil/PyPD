@@ -1,1 +1,0 @@
-__all__ = ['telescope.py', 'detector.py', 'aperture.py']
