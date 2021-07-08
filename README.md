@@ -30,8 +30,7 @@ This class allows the user to:
 3. Construct the PSF and MTF from a set of Zernike Polynomials (from wavefront to PSF to OTF to MTF)
 4. Restore blurred images and correct for the PSF choosing between the Wiener filter and the Richardson-Lucy filter
 
-The modules in this class:
-1 .  `fit`: takes in the following parameters
+The parameters of this class:
   1. the pair of focused and defocused images, 
   2. the parameters of the `Telescope` class
   3. `cutoff` frequency for the noise filtering
@@ -40,3 +39,8 @@ The modules in this class:
   6. `x1, x2, y1, y2`: the delimeters of the region of interest
   7. `co_num`: number of Zernike polynomials to fit the wavefront
   8. `del_z`: the amount of defocus in lambda
+The modules of this class:
+1. `fit`: takes in the method of fitting and returns the best-fit Zernike coefficients
+2. `plot_results`: takes in the returned Zernike coefficients and plots the wavefront error, the 2D MTF, the 1D MTF
+3. `restored_scene`: perform the deconvolution of a blurred image with an input of Zernike Coefficients. The user can use between two filter `Wiener` and `richardsonLucy`
+
