@@ -31,7 +31,7 @@ This class allows the user to:
 4. Restore blurred images and correct for the PSF choosing between the Wiener filter and the Richardson-Lucy filter
 
 The modules in this class:
--  `fit`: takes in the following parameters:
+1 -  `fit`: takes in the following parameters
   1- the pair of focused and defocused images, 
   2- the parameters of the `Telescope` class
   3- `cutoff` frequency for the noise filtering
