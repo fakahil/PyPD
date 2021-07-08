@@ -41,7 +41,7 @@ The parameters of this class:
   8. `del_z`: the amount of defocus in lambda
 
 The modules of this class:
-1. `fit`: takes in the method of fitting and returns the best-fit Zernike coefficients
-2. `plot_results`: takes in the returned Zernike coefficients and plots the wavefront error, the 2D MTF, the 1D MTF
-3. `restored_scene`: perform the deconvolution of a blurred image with an input of Zernike Coefficients. The user can use between two filter `Wiener` and `richardsonLucy`
+  1. `fit`: takes in the method of fitting and returns the best-fit Zernike coefficients
+  2. `plot_results`: takes in the returned Zernike coefficients and plots the wavefront error, the 2D MTF, the 1D MTF
+  3. `restored_scene`: perform the deconvolution of a blurred image with an input of Zernike Coefficients. The user can use between two filter `Wiener` and `richardsonLucy`
 
