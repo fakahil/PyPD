@@ -31,12 +31,12 @@ This class allows the user to:
 4. Restore blurred images and correct for the PSF choosing between the Wiener filter and the Richardson-Lucy filter
 
 The modules in this class:
-1 -  `fit`: takes in the following parameters
-  1- the pair of focused and defocused images, 
-  2- the parameters of the `Telescope` class
-  3- `cutoff` frequency for the noise filtering
-  4-  `reg`: regularization parameter for the Wiener filter
-  5- `ap`: the amount of the apodization rim in pixels
-  6- `x1, x2, y1, y2`: the delimeters of the region of interest
-  7- `co_num`: number of Zernike polynomials to fit the wavefront
-  8- `del_z`: the amount of defocus in lambda
+1 .  `fit`: takes in the following parameters
+  1. the pair of focused and defocused images, 
+  2. the parameters of the `Telescope` class
+  3. `cutoff` frequency for the noise filtering
+  4.  `reg`: regularization parameter for the Wiener filter
+  5. `ap`: the amount of the apodization rim in pixels
+  6. `x1, x2, y1, y2`: the delimeters of the region of interest
+  7. `co_num`: number of Zernike polynomials to fit the wavefront
+  8. `del_z`: the amount of defocus in lambda
