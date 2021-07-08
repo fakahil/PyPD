@@ -39,7 +39,7 @@ The parameters of this class:
   6. `x1, x2, y1, y2`: the delimeters of the region of interest
   7. `co_num`: number of Zernike polynomials to fit the wavefront
   8. `del_z`: the amount of defocus in lambda
-  9. 
+
 The modules of this class:
 1. `fit`: takes in the method of fitting and returns the best-fit Zernike coefficients
 2. `plot_results`: takes in the returned Zernike coefficients and plots the wavefront error, the 2D MTF, the 1D MTF
