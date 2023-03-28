@@ -67,10 +67,11 @@ class minimization(object):
       Mask = aperture.mask_pupil(rpupil,self.size)
       
       d0,dk = PD.FT(im0,imk)
-      
-      noise_filter = fftshift(noise.noise_mask_high(self.size,self.cut_off))
-      M_gamma = noise.noise_mask(self.size,self.cut_off)
-      gam = noise.Gamma(d0,dk,M_gamma)
+      noise_temp = noise_mask_high(self.size,self.cut_off)
+      noise_filter = fftshift(noise_temp)
+
+      M_gamma = noise_mask(self.size,self.cut_off)
+      gam = Gamma(d0,dk,M_gamma)
       p0 =   np.zeros(self.co_num)
 
       def Minimise(coefficients):
@@ -111,31 +112,32 @@ class minimization(object):
       if wav=='True':
       #def plot_wavefront(self):
         fig = plt.figure(figsize=(10,10))
-	ax = fig.add_subplot(1,1,1)
+        ax = fig.add_subplot(1,1,1)
 
-	im = ax.imshow(ph/(2*np.pi), origin='lower',cmap='gray')
+        im = ax.imshow(ph/(2*np.pi), origin='lower',cmap='gray')
         ax.set_xlabel('[Pixels]',fontsize=18)
-	ax.set_ylabel('[Pixels]',fontsize=18)
-	divider = make_axes_locatable(ax)
-	cax = divider.append_axes("right", size=0.15, pad=0.05)
+        ax.set_ylabel('[Pixels]',fontsize=18)
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size=0.15, pad=0.05)
 
-	cbar = plt.colorbar(im, cax=cax,orientation='vertical')#,ticks=np.arange(0.4,0.9,0.1))
+        cbar = plt.colorbar(im, cax=cax,orientation='vertical')#,ticks=np.arange(0.4,0.9,0.1))
         cbar.set_label('WF error HRT [$\lambda$]',fontsize=20)
-	plt.show() 
+        plt.show() 
+
       #else:
         #pass
 
       #def plot_mtf(self):
       if modulation=='True':
         fig = plt.figure(figsize=(10,10))
-	ax = fig.add_subplot(1,1,1)
+        ax = fig.add_subplot(1,1,1)
         im = ax.imshow(wavefront.MTF(fftshift(t0)), origin='lower',cmap='gray')
         ax.set_xlabel('[Pixels]',fontsize=18)
-	ax.set_ylabel('[Pixels]',fontsize=18)
-	divider = make_axes_locatable(ax)
-	cax = divider.append_axes("right", size=0.15, pad=0.05)
+        ax.set_ylabel('[Pixels]',fontsize=18)
+        divider = make_axes_locatable(ax)
+        cax = divider.append_axes("right", size=0.15, pad=0.05)
 
-	cbar = plt.colorbar(im, cax=cax,orientation='vertical')#,ticks=np.arange(0.4,0.9,0.1))
+        cbar = plt.colorbar(im, cax=cax,orientation='vertical')#,ticks=np.arange(0.4,0.9,0.1))
         cbar.set_label('MTF',fontsize=20)
 
         plt.show()
@@ -159,7 +161,7 @@ class minimization(object):
         plt.show()
 
    
-   def restored_scene(self,Z, to_clean,filter,iterations_RL):
+   def restored_scene(self,Z, to_clean,filter,iterations_RL=10):
 
       A_f = wavefront.pupil_foc(Z,self.size,self.telescope.pupil_size(),self.co_num) 
       rpupil = self.telescope.pupil_size()
@@ -171,14 +173,30 @@ class minimization(object):
       elif to_clean.shape == t0.shape:
 
         if filter == 'Wiener':
-         restored = deconvolution.Wienerfilter(to_clean,t0,self.reg,self.cut_off,self.size) 
+         restored =Wienerfilter(to_clean,t0,self.reg,self.cut_off,self.size,self.ap) 
          return restored
         if filter == 'richardsonLucy':
-         restored = deconvolution.richardsonLucy(to_clean, psf_foc, iterations_RL)
+         restored = richardsonLucy(to_clean, psf_foc, iterations_RL)
          return restored
 
+'''
+
+if (__name__ == '__main__'):
+
+parser = argparse.ArgumentParser(description='Prediction')
+parser.add_argument('-i','--input', help='input')
+parser.add_argument('-o','--out', help='out')
+parser.add_argument('-d','--depth', help='depth', default=5)
+parser.add_argument('-m','--model', help='model', choices=['encdec', 'encdec_reflect', 'keepsize_zero', 'keepsize'], default='keepsize')
+parser.add_argument('-c','--activation', help='Activation', choices=['relu', 'elu'], default='relu')
+parser.add_argument('-t','--type', help='type', choices=['intensity', 'blos'], default='intensity')
+parsed = vars(parser.parse_args())
 
 
-       
+print('Model : {0}'.format(parsed['type']))
+out = enhance('{0}'.format(parsed['input']), depth=int(parsed['depth']), model=parsed['model'], activation=parsed['activation'],ntype=parsed['type'], output=parsed['out'])
+out.define_network()
+out.predict()
+'''
       
       

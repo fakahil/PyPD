@@ -60,8 +60,9 @@ def richardsonLucy(img, psf, iterations=100):
 
     return np.abs(f)
 
-def Wienerfilter(img,t0,reg,cut_off,size):
-    noise_filter = fftshift(noise.noise_mask_high(size,cut_off))
+def Wienerfilter(img,t0,reg,cut_off,size,ap):
+    temp = noise_mask_high(size,cut_off)
+    noise_filter = fftshift(temp)
 
     im0 = tools.apo2d(img,ap)
     d0 = fft2(im0)

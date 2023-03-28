@@ -84,7 +84,8 @@ def PSF(mask,abbe,norm):
 def OTF(psf):
     otf = ifftshift(psf)
     otf = fft2(otf)
-    otf = otf/float(otf[0,0])
+    otf = otf/np.real(otf[0,0])
+
     #otf = otf/otf.max() # or otf_max = otf[size/2,size/2] if max is shifted to center
    
     return otf

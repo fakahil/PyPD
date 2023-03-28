@@ -20,23 +20,23 @@ import pyfits
 class Telescope(object):
 
     def __init__(self,lam,diameter,focal_length,name,platescale,size):
-	self.lam = lam
-	self.diameter = diameter
-	self.focal_length = focal_length
-	self.name = name
-        self.nu_cutoff = self.diameter/self.lam
-        self.size = size 
-        self.platescale = platescale
-        #self.camera = Detector()
+     self.lam = lam
+     self.diameter = diameter
+     self.focal_length = focal_length
+     self.name = name
+     self.nu_cutoff = self.diameter/self.lam
+     self.size = size 
+     self.platescale = platescale
+     #self.camera = Detector()
 
     def calc_ps(self, pix_size):
-	return 206265*pix_size/self.focal_length
-	
+      return 206265*pix_size/self.focal_length
+    
     def show_lam(self):
-    	return self.lam
+        return self.lam
 
     def show_diameter(self):
-    	return self.diameter
+        return self.diameter
 
     def pupil_size(self):
         pix = self.platescale
