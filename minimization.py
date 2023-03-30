@@ -20,7 +20,7 @@ import wavefront
 import deconvolution
 from scipy.optimize import minimize, minimize_scalar
 
-
+import argparse
 #from . import detector
 #from .detector import *
 from telescope import *
@@ -34,9 +34,12 @@ from deconvolution import *
 
 class minimization(object):
 
-   def __init__(self,foc,defoc,size,lam, diameter,focal_length,platescale,cut_off,reg,ap,x1,x2,y1,y2,co_num,del_z):
-      self.foc = foc
-      self.defoc = defoc
+   def __init__(self,foc_defoc,size,lam, diameter,focal_length,platescale,cut_off,reg,ap,x1,x2,y1,y2,co_num,del_z,output,filterr):
+      self.data = fits.getdata(foc_defoc)
+
+
+      self.foc =  self.data[0,:,:]
+      self.defoc = self.data[1,:,:]
       self.cut_off = cut_off
       self.reg = reg
       self.size = size
@@ -53,8 +56,9 @@ class minimization(object):
       self.platescale = platescale
       self.reg = reg
       self.telescope = Telescope(self.lam,self.diameter,self.focal_length,'HRT',self.platescale,self.size)
-
-
+      self.output = output
+      self.filterr = filterr
+     
 
 
    def fit(self,m = 'L-BFGS-B'):
@@ -96,10 +100,8 @@ class minimization(object):
       return mini.x
 
 
-   def plot_results(self,Z,wav,modulation,azimuthal):
+   def plot_results(self,Z):
 
-    if len(Z)!=self.co_num:
-      self.co_num = len(Z)
      
       
       A_f = wavefront.pupil_foc(Z,self.size,self.telescope.pupil_size(),self.co_num) 
@@ -109,60 +111,46 @@ class minimization(object):
       t0 = wavefront.OTF(psf_foc)
       ph =wavefront.phase(Z, self.telescope.pupil_size(),self.co_num)
      
-      if wav=='True':
-      #def plot_wavefront(self):
-        fig = plt.figure(figsize=(10,10))
-        ax = fig.add_subplot(1,1,1)
+     
+      fig = plt.figure(figsize=(10,10))
+      ax1 = fig.add_subplot(1,3,1)
+      im1 = ax1.imshow(ph/(2*np.pi), origin='lower',cmap='gray')
+      ax1.set_xlabel('[Pixels]',fontsize=18)
+      ax1.set_ylabel('[Pixels]',fontsize=18)
+      divider1 = make_axes_locatable(ax1)
+      cax1 = divider1.append_axes("right", size=0.15, pad=0.05)
+      cbar1 = plt.colorbar(im1, cax=cax1,orientation='vertical')#,ticks=np.arange(0.4,0.9,0.1))
+      ax1.set_title('WF error HRT [$\lambda$]',fontsize=20)
 
-        im = ax.imshow(ph/(2*np.pi), origin='lower',cmap='gray')
-        ax.set_xlabel('[Pixels]',fontsize=18)
-        ax.set_ylabel('[Pixels]',fontsize=18)
-        divider = make_axes_locatable(ax)
-        cax = divider.append_axes("right", size=0.15, pad=0.05)
+      ax2 = fig.add_subplot(1,3,2)
+      im2 = ax2.imshow(wavefront.MTF(fftshift(t0)), origin='lower',cmap='gray')
+      ax2.set_xlabel('[Pixels]',fontsize=18)
+      ax2.set_ylabel('[Pixels]',fontsize=18)
+      divider2 = make_axes_locatable(ax2)
+      cax2 = divider2.append_axes("right", size=0.15, pad=0.05)
+      cbar2 = plt.colorbar(im2, cax=cax2,orientation='vertical')#,ticks=np.arange(0.4,0.9,0.1))
+      ax2.set_title('MTF',fontsize=20)
 
-        cbar = plt.colorbar(im, cax=cax,orientation='vertical')#,ticks=np.arange(0.4,0.9,0.1))
-        cbar.set_label('WF error HRT [$\lambda$]',fontsize=20)
-        plt.show() 
+ 
+      az = tools.GetPSD1D(wavefront.MTF(fftshift(t0)))
+      freq=np.linspace(0,0.5,int(self.size/2))
+      freq_c_hrt = self.diameter/(self.lam*self.focal_length*100)
+      phi_hrt = np.arccos(freq/freq_c_hrt)
+      MTF_p_hrt = (2/np.pi)*(phi_hrt - (np.cos(phi_hrt))*np.sin(phi_hrt))
+      ax3 = fig.add_subplot(1,3,3)
+      ax3.set_xlabel('Freq (1/pixel)',fontsize=22)
+      ax3.set_ylabel('MTF',fontsize=22)
+      ax3.plot(freq,MTF_p_hrt,label='Theoretical MTF')
+      ax3.plot(freq,az,label='Observed MTF')
+      ax3.set_xlim(0,0.5)
+      plt.legend()
+      plt.subplots_adjust(hspace=0.1, wspace=0.6)
 
-      #else:
-        #pass
-
-      #def plot_mtf(self):
-      if modulation=='True':
-        fig = plt.figure(figsize=(10,10))
-        ax = fig.add_subplot(1,1,1)
-        im = ax.imshow(wavefront.MTF(fftshift(t0)), origin='lower',cmap='gray')
-        ax.set_xlabel('[Pixels]',fontsize=18)
-        ax.set_ylabel('[Pixels]',fontsize=18)
-        divider = make_axes_locatable(ax)
-        cax = divider.append_axes("right", size=0.15, pad=0.05)
-
-        cbar = plt.colorbar(im, cax=cax,orientation='vertical')#,ticks=np.arange(0.4,0.9,0.1))
-        cbar.set_label('MTF',fontsize=20)
-
-        plt.show()
-      #else:
-        #pass
-
-      if azimuthal =='True':
-      #def plot_azimuthal_mtf(self):
-        az = tools.GetPSD1D(wavefront.MTF(fftshift(t0)))
-        freq=np.linspace(0,0.5,int(self.size/2))
-        freq_c_hrt = self.diameter/(self.lam*self.focal_length*100)
-        phi_hrt = np.arccos(freq/freq_c_hrt)
-        MTF_p_hrt = (2/np.pi)*(phi_hrt - (np.cos(phi_hrt))*np.sin(phi_hrt))
-        fig = plt.figure(figsize=(10,10))
-        plt.xlabel('Freq (1/pixel)',fontsize=22)
-        plt.ylabel('MTF',fontsize=22)
-        plt.plot(freq,MTF_p_hrt,label='Theoretical MTF')
-        plt.plot(freq,az,label='Observed MTF')
-        plt.xlim(0,0.5)
-        plt.legend()
-        plt.show()
+      plt.savefig('resutls.png')
 
    
-   def restored_scene(self,Z, to_clean,filter,iterations_RL=10):
-
+   def restored_scene(self,Z,iterations_RL=10):
+      to_clean = self.foc[self.y1:self.y2,self.x1:self.x2]
       A_f = wavefront.pupil_foc(Z,self.size,self.telescope.pupil_size(),self.co_num) 
       rpupil = self.telescope.pupil_size()
       Mask = aperture.mask_pupil(rpupil,self.size)
@@ -172,31 +160,61 @@ class minimization(object):
          raise ValueError('Image and PSF do not have the same dimensions')
       elif to_clean.shape == t0.shape:
 
-        if filter == 'Wiener':
+        if self.filterr == 'Wiener':
          restored =Wienerfilter(to_clean,t0,self.reg,self.cut_off,self.size,self.ap) 
-         return restored
-        if filter == 'richardsonLucy':
-         restored = richardsonLucy(to_clean, psf_foc, iterations_RL)
-         return restored
+  
 
-'''
+        if self.filterr == 'richardsonLucy':
+         restored = richardsonLucy(to_clean, psf_foc, iterations_RL)
+
+        print("Saving data...")
+        hdu = fits.PrimaryHDU(restored)
+        hdu.writeto(self.output,overwrite=True)
+        '''
+        import os.path
+        if os.path.exists(self.output):
+            os.system('rm {0}'.format(self.output))
+            print('Overwriting...')
+            hdu.writeto(self.output,overwrite=True)
+
+        '''
+
 
 if (__name__ == '__main__'):
 
-parser = argparse.ArgumentParser(description='Prediction')
-parser.add_argument('-i','--input', help='input')
-parser.add_argument('-o','--out', help='out')
-parser.add_argument('-d','--depth', help='depth', default=5)
-parser.add_argument('-m','--model', help='model', choices=['encdec', 'encdec_reflect', 'keepsize_zero', 'keepsize'], default='keepsize')
-parser.add_argument('-c','--activation', help='Activation', choices=['relu', 'elu'], default='relu')
-parser.add_argument('-t','--type', help='type', choices=['intensity', 'blos'], default='intensity')
-parsed = vars(parser.parse_args())
 
 
-print('Model : {0}'.format(parsed['type']))
-out = enhance('{0}'.format(parsed['input']), depth=int(parsed['depth']), model=parsed['model'], activation=parsed['activation'],ntype=parsed['type'], output=parsed['out'])
-out.define_network()
-out.predict()
-'''
-      
+ parser = argparse.ArgumentParser(description='Retrieving wavefront error')
+ parser.add_argument('-i','--input', help='input')
+ parser.add_argument('-o','--out', help='out')
+ parser.add_argument('-s','--size', help='size',default=150)
+ parser.add_argument('-w','--wavelength', help='wavelength',default=617.3e-6)
+ parser.add_argument('-a','--aperture', help='aperture', default=140)
+ parser.add_argument('-f','--focal_length', help='focal_length',default=4125.3)
+ parser.add_argument('-p','--plate_scale', help='plate_scale',default=0.5)
+ parser.add_argument('-c','--cut_off', help='cut_off',default=0.5)
+ parser.add_argument('-r','--reg', help='reg',default=1e-10)
+ parser.add_argument('-ap','--apod', help='apod',default=10)
+ parser.add_argument('-x1','--x1', help='x1')
+ parser.add_argument('-x2','--x2', help='x2')
+ parser.add_argument('-y1','--y1', help='y1')
+ parser.add_argument('-y2','--y2', help='y2')
+ parser.add_argument('-z','--Z', help='Z',default=10)
+ parser.add_argument('-del','--del', help='del',default=0.5)
+ parser.add_argument('-fl','--filter', help='filter', choices=['richardsonLucy', 'Wiener'], default='Wiener')
+
+ parsed = vars(parser.parse_args())
+
+
+
+ res = minimization(foc_defoc='{0}'.format(parsed['input']), size=int(parsed['size']), lam=float(parsed['wavelength']),diameter=float(parsed['aperture']),focal_length=float(parsed['focal_length']),
+ platescale=float(parsed['plate_scale']),cut_off=float(parsed['cut_off']),reg=float(parsed['reg']),ap=int(parsed['apod']),x1=int(parsed['x1']),x2=int(parsed['x2']),y1=int(parsed['y1']),y2=int(parsed['y2']),
+ co_num=int(parsed['Z']),del_z=float(parsed['del']),output='{0}'.format(parsed['out']),filterr=parsed['filter'])
+
+ Z = res.fit() 
+ print(Z)
+ res.plot_results(Z)
+ res.restored_scene(Z,10)
+
+
       

@@ -5,7 +5,7 @@ This repo contains a Python package that I have written for applying Phase Diver
 
 It is based on the algorithm described in [Löfdahl and Scharmer. 1994](http://adsabs.harvard.edu/full/1994A&AS..107..243L)
 
-# How to use the code?
+# Classes explained
 An important note here is to use a unified unit for all parameters (nm or m)
 
 ## The `Telescope` class:
@@ -45,6 +45,14 @@ The modules of this class:
   1. `fit`: takes in the method of fitting and returns the best-fit Zernike coefficients
   2. `plot_results`: takes in the returned Zernike coefficients and plots the wavefront error, the 2D MTF, the 1D MTF
   3. `restored_scene`: perform the deconvolution of a blurred image with an input of Zernike Coefficients. The user can use between two filter `Wiener` and `richardsonLucy`
+
+# How to use the code?
+The code returns the best-fit zernike polynomials, a visualisation of the results (wavefront error+MTF), and the restored scene (in this case the focused image of the PD dataset). To get these specific results, type in the shell terminal:
+```
+python3 minimization.py -i 'path/input.fits' -s 150 -w 617.3e-6 -a 140 -f 4125.3 -p 0.5 -c 0.5 -r 1e-10 -ap 10 -x1 100 -x2 250 -y1 100 -y2 250 -z 10 -del 0.5 -o path/reduced.fits -fl 'Wiener'
+```
+
+The specific description of the parsers can be found inside [the main code](https://github.com/fakahil/PyPD/blob/master/minimization.py). The values given above are for an example PD dataset taken by the PHI/HRT telescope. You can change the values according to your telescope.
 
 
 
