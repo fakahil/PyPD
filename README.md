@@ -46,13 +46,23 @@ The modules of this class:
   2. `plot_results`: takes in the returned Zernike coefficients and plots the wavefront error, the 2D MTF, the 1D MTF
   3. `restored_scene`: perform the deconvolution of a blurred image with an input of Zernike Coefficients. The user can use between two filter `Wiener` and `richardsonLucy`
 
+## The `patch_pd` class:
+For fitting the wavefront error is sub-regions of the full FOV of the PD dataset. The user can enter the size of the subregion (it has to be quadratic) plus the number of Zernike polynomials to be fit and the names of the output files (one for the wavefront error and one for the 2D MTF).
 # How to use the code?
-The code returns the best-fit zernike polynomials, a visualisation of the results (wavefront error+MTF), and the restored scene (in this case the focused image of the PD dataset). To get these specific results, type in the shell terminal:
+The `minimization` class returns the best-fit zernike polynomials, a visualisation of the results (wavefront error+MTF), and the restored scene (in this case the focused image of the PD dataset). To get these specific results, type in the shell terminal:
 ```
 python3 minimization.py -i 'path/input.fits' -s 150 -w 617.3e-6 -a 140 -f 4125.3 -p 0.5 -c 0.5 -r 1e-10 -ap 10 -x1 500 -x2 650 -y1 500 -y2 650 -z 10 -del 0.5 -o path/reduced.fits -fl 'Wiener'
 ```
 
 The specific description of the parsers can be found inside [the main code](https://github.com/fakahil/PyPD/blob/master/minimization.py). The values given above are for an example PD dataset taken by the PHI/HRT telescope. You can change the values according to your telescope.
+
+To use the `patch_pd` class:
+
+```
+python3 patch_pd.py -i 'path/input.fits' -z 10 -d 265 -ow 'path/output_wf.fits' -om 'path/output_wf.fits'
+
+```
+The parsers description can be found in the [main code](https://github.com/fakahil/PyPD/blob/master/patch_pd.py)
 
 
 

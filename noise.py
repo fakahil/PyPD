@@ -1,16 +1,10 @@
 import numpy as np
-import matplotlib.pyplot as plt
+
 import scipy
 from scipy.fftpack import fftshift, ifftshift, fft2, ifft2
-from mpl_toolkits.axes_grid1 import make_axes_locatable, axes_size
-from scipy.signal import correlate2d as correlate
-from scipy.signal import general_gaussian
-from astropy.io import fits
-from scipy import ndimage
-from functools import partial
-import time
-import imreg_dft
-import pyfits
+
+
+
 
 
 # compute the gamma parameter
