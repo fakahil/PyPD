@@ -48,6 +48,8 @@ The modules of this class:
 
 ## The `patch_pd` class:
 For fitting the wavefront error is sub-regions of the full FOV of the PD dataset. The user can enter the size of the subregion (it has to be quadratic) plus the number of Zernike polynomials to be fit and the names of the output files (one for the wavefront error and one for the 2D MTF).
+
+The class offers the option to run parallel computation by setting the parser -p to True (see below).
 # How to use the code?
 The `minimization` class returns the best-fit zernike polynomials, a visualisation of the results (wavefront error+MTF), and the restored scene (in this case the focused image of the PD dataset). To get these specific results, type in the shell terminal:
 ```
@@ -59,7 +61,7 @@ The specific description of the parsers can be found inside [the main code](http
 To use the `patch_pd` class:
 
 ```
-python3 patch_pd.py -i 'path/input.fits' -z 10 -d 265 -ow 'path/output_wf.fits' -om 'path/output_wf.fits'
+python3 patch_pd.py -i 'path/input.fits' -z 10 -d 265 -ow 'path/output_wf.fits' -om 'path/output_wf.fits -p True
 
 ```
 The parsers description can be found in the [main code](https://github.com/fakahil/PyPD/blob/master/patch_pd.py)

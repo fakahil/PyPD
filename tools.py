@@ -101,5 +101,50 @@ def plot_zernike(coeff):
         plt.ylabel('Coefficient [$\lambda$]',fontsize=18) 
         plt.title('Zernike Polynomials Coefficients',fontsize=18)
 
+def prepare_patches(d,Del,Im0,Imk):
+    n = d.shape[0]
+    upper = 1700-Del
+    lower = 300
+    Nx = np.arange(lower,upper,Del)
+    Ny = np.arange(lower,upper,Del)
+    i_max = np.floor((upper-lower)/Del)+1
+    patches = np.zeros((int(i_max**2),Del,Del,n))
+    #output_WF =np.zeros((int(i_max**2),Del,Del))
+    #output_mtf = np.zeros((int(i_max**2),Del,Del))
+    k=0
+    for n1 in Nx :
+       for n2 in Ny:
+        patches[k,:,:,0]=Im0[n2:n2+Del,n1:n1+Del]
+        patches[k,:,:,1]=Imk[n2:n2+Del,n1:n1+Del]
+        k = k+1
+    return patches
+
+
+def stitch_patches(results,Del):
+    data1 = [r[0] for r in results]
+    data2 = [r[1] for r in results]
+    upper = 1700-Del
+    lower = 300
+    Nx = np.arange(lower,upper,Del)
+    Ny = np.arange(lower,upper,Del)
+    i_max = np.floor((upper-lower)/Del)+1
+    k = 0
+    if len(data1)==(np.floor((upper-lower)/Del)+1)**2:
+
+      st_wf = np.zeros((2048,2048))
+      st_mtf = np.zeros((2048,2048))
+    else:
+        raise TypeError('Check dimensions!')
+
+    for n1 in Nx :
+         for n2 in Ny:
+             st_wf[n2:n2+Del,n1:n1+Del] = data1[k]
+             st_mtf[n2:n2+Del,n1:n1+Del] = data2[k]
+             k=k+1
+    return st_wf,st_mtf
+    
+
+   
+
 
 
