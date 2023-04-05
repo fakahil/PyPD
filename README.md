@@ -53,7 +53,7 @@ The class offers the option to run parallel computation by setting the parser -p
 # How to use the code?
 The `minimization` class returns the best-fit zernike polynomials, a visualisation of the results (wavefront error+MTF), and the restored scene (in this case the focused image of the PD dataset). To get these specific results, type in the shell terminal:
 ```
-python3 minimization.py -i 'path/input.fits' -s 150 -w 617.3e-6 -a 140 -f 4125.3 -p 0.5 -c 0.5 -r 1e-10 -ap 10 -x1 500 -x2 650 -y1 500 -y2 650 -z 10 -del 0.5 -o path/reduced.fits -fl 'Wiener'
+python3 minimization.py -i 'path/input.fits' -w 617.3e-6 -a 140 -f 4125.3 -p 0.5 -c 0.5 -r 1e-10 -ap 10 -x1 500 -x2 650 -y1 500 -y2 650 -z 10 -del 0.5 -o path/reduced.fits -fl 'Wiener'
 ```
 
 The specific description of the parsers and input to the class can be found inside [the main code](https://github.com/fakahil/PyPD/blob/master/minimization.py). The values given above are for an example PD dataset taken by the PHI/HRT telescope. You can change the values according to your telescope.
