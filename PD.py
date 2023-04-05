@@ -5,8 +5,6 @@ from scipy.fftpack import fftshift, ifftshift, fft2, ifft2
 from functools import partial
 
 
-import pyfits
-
 
 
 ## function to compute the FT of focused and defocused image

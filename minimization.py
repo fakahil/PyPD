@@ -34,7 +34,7 @@ from deconvolution import *
 
 class minimization(object):
 
-   def __init__(self,foc_defoc,size,lam, diameter,focal_length,platescale,cut_off,reg,ap,x1,x2,y1,y2,co_num,del_z,output,filterr):
+   def __init__(self,foc_defoc,lam, diameter,focal_length,platescale,cut_off,reg,ap,x1,x2,y1,y2,co_num,del_z,output,filterr):
       self.data = fits.getdata(foc_defoc)
 
 
@@ -42,7 +42,7 @@ class minimization(object):
       self.defoc = self.data[1,:,:]
       self.cut_off = cut_off
       self.reg = reg
-      self.size = size
+      self.size =self.y2-self.y1
       self.ap = ap
       self.co_num = co_num
       self.x1 = x1
@@ -112,7 +112,7 @@ class minimization(object):
       ph =wavefront.phase(Z, self.telescope.pupil_size(),self.co_num)
      
      
-      fig = plt.figure(figsize=(10,10))
+      fig = plt.figure(figsize=(20,20))
       ax1 = fig.add_subplot(1,3,1)
       im1 = ax1.imshow(ph/(2*np.pi), origin='lower',cmap='gray')
       ax1.set_xlabel('[Pixels]',fontsize=18)
@@ -187,7 +187,6 @@ if (__name__ == '__main__'):
  parser = argparse.ArgumentParser(description='Retrieving wavefront error')
  parser.add_argument('-i','--input', help='input')
  parser.add_argument('-o','--out', help='out')
- parser.add_argument('-s','--size', help='size',default=150)
  parser.add_argument('-w','--wavelength', help='wavelength',default=617.3e-6)
  parser.add_argument('-a','--aperture', help='aperture', default=140)
  parser.add_argument('-f','--focal_length', help='focal_length',default=4125.3)
@@ -207,12 +206,13 @@ if (__name__ == '__main__'):
 
 
 
- res = minimization(foc_defoc='{0}'.format(parsed['input']), size=int(parsed['size']), lam=float(parsed['wavelength']),diameter=float(parsed['aperture']),focal_length=float(parsed['focal_length']),
+ res = minimization(foc_defoc='{0}'.format(parsed['input']), lam=float(parsed['wavelength']),diameter=float(parsed['aperture']),focal_length=float(parsed['focal_length']),
  platescale=float(parsed['plate_scale']),cut_off=float(parsed['cut_off']),reg=float(parsed['reg']),ap=int(parsed['apod']),x1=int(parsed['x1']),x2=int(parsed['x2']),y1=int(parsed['y1']),y2=int(parsed['y2']),
  co_num=int(parsed['Z']),del_z=float(parsed['del']),output='{0}'.format(parsed['out']),filterr=parsed['filter'])
 
  Z = res.fit() 
  print(Z)
+ tools.plot_zernike(Z)
  res.plot_results(Z)
  res.restored_scene(Z,10)
 

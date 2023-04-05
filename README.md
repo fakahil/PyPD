@@ -32,7 +32,7 @@ This class allows the user to:
 4. Restore blurred images and correct for the PSF choosing between the Wiener filter and the Richardson-Lucy filter
 
 The parameters of this class:
-  1. the pair of focused and defocused images, 
+  1. the pair of focused and defocused images, the input image should have a format of `2xsize_xxsize_y`.
   2. the parameters of the `Telescope` class
   3. `cutoff` frequency for the noise filtering
   4.  `reg`: regularization parameter for the Wiener filter
@@ -56,7 +56,7 @@ The `minimization` class returns the best-fit zernike polynomials, a visualisati
 python3 minimization.py -i 'path/input.fits' -s 150 -w 617.3e-6 -a 140 -f 4125.3 -p 0.5 -c 0.5 -r 1e-10 -ap 10 -x1 500 -x2 650 -y1 500 -y2 650 -z 10 -del 0.5 -o path/reduced.fits -fl 'Wiener'
 ```
 
-The specific description of the parsers can be found inside [the main code](https://github.com/fakahil/PyPD/blob/master/minimization.py). The values given above are for an example PD dataset taken by the PHI/HRT telescope. You can change the values according to your telescope.
+The specific description of the parsers and input to the class can be found inside [the main code](https://github.com/fakahil/PyPD/blob/master/minimization.py). The values given above are for an example PD dataset taken by the PHI/HRT telescope. You can change the values according to your telescope.
 
 To use the `patch_pd` class:
 

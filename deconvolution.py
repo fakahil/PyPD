@@ -5,7 +5,7 @@ import scipy
 from scipy.fftpack import fftshift, ifftshift, fft2, ifft2
 from astropy.io import fits
 import imreg_dft
-import pyfits
+
 import tools
 import aperture
 import PD

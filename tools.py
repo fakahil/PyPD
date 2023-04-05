@@ -1,4 +1,5 @@
 import numpy as np
+import pylab
 import matplotlib.pyplot as plt
 import scipy
 from scipy.fftpack import fftshift, ifftshift, fft2, ifft2
@@ -6,8 +7,9 @@ from mpl_toolkits.axes_grid1 import make_axes_locatable, axes_size
 from scipy.signal import correlate2d as correlate
 from scipy.signal import general_gaussian
 from scipy import ndimage
-
-
+import imreg_dft as ird
+from image_registration import chi2_shift
+from image_registration.fft_tools import shift
 
 
 def GetPSD1D(psd2D):
@@ -72,9 +74,7 @@ def strehl(rms):
     return np.exp(-2*(np.pi*rms**2))
 
 def imreg(im0,imk):
-    import imreg_dft as ird
-    from image_registration import chi2_shift
-    from image_registration.fft_tools import shift
+
     xoff, yoff, exoff, eyoff = chi2_shift(im0,imk)
     timg = ird.transform_img(imk, tvec=np.array([-yoff,-xoff]))
     return timg
@@ -86,7 +86,6 @@ def noise(im):
     from skimage.restoration import estimate_sigma
     s = estimate_sigma(im)
     return s
-
 
 def plot_zernike(coeff): 
     n = coeff.shape[0] 
@@ -100,10 +99,11 @@ def plot_zernike(coeff):
         plt.xlabel('Zernike Polynomials',fontsize=18) 
         plt.ylabel('Coefficient [$\lambda$]',fontsize=18) 
         plt.title('Zernike Polynomials Coefficients',fontsize=18)
+        plt.savefig('Zernikes.png',dpi=300)
 
 def prepare_patches(d,Del,Im0,Imk):
     n = d.shape[0]
-    upper = 1700-Del
+    upper = 1700
     lower = 300
     Nx = np.arange(lower,upper,Del)
     Ny = np.arange(lower,upper,Del)
@@ -141,10 +141,58 @@ def stitch_patches(results,Del):
              st_wf[n2:n2+Del,n1:n1+Del] = data1[k]
              st_mtf[n2:n2+Del,n1:n1+Del] = data2[k]
              k=k+1
-    return st_wf,st_mtf
+    return st_mtf,st_wf
     
 
    
+def plot_mtf_wf(ph,mtf):
+   
+    fig=plt.figure(figsize=(20,8))
+    aspect = 5
+    pad_fraction = 0.5
+    ax = fig.add_subplot(1,2,1)
+    im=ax.imshow(ph/(2*np.pi), cmap=pylab.gray(),origin='lower',vmin=-1.2,vmax=1.2)
+  
+    ax.set_xlabel('[Pixels]',fontsize=18)
+    ax.set_ylabel('[Pixels]',fontsize=18)
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size=0.15, pad=0.05)
+    cbar = plt.colorbar(im, cax=cax,orientation='vertical')
+    cbar.set_label('WF error HRT [$\lambda$]',fontsize=20)
+    cax.tick_params(labelsize=14)
+    ax2 = fig.add_subplot(1,2,2)
 
+    im2=ax2.imshow(mtf,cmap=pylab.gray(),origin='lower',vmin=0,vmax=1)
+    ax2.set_xlabel('[Pixels]',fontsize=18)
+    divider = make_axes_locatable(ax2)
+    cax2 = divider.append_axes("right", size=0.15, pad=0.05)
+    cbar2 = plt.colorbar(im2, cax=cax2,orientation='vertical')
+    cax2.tick_params(labelsize=14)
+    cbar2.set_label('MTF',fontsize=16)
 
+    plt.subplots_adjust(wspace=.2, hspace=None)
+    plt.savefig('WFE+MTF.png',dpi=300)
+    
 
+def compute_residual_shifts(pd_pair,Del):
+
+    d = fits.getdata(pd_pair)
+    xoff, yoff, exoff, eyoff = chi2_shift(d[0,500:1000,500:1000],d[1,500:1000,500:1000])
+    Imk = ird.transform_img(d[1,:,:], tvec=np.array([-yoff,-xoff]))
+    Nx = np.arange(200,1800,Del)
+    Ny = np.arange(200,1800,Del)
+    shifts_x = np.zeros((2048,2048))
+    shifts_y = np.zeros((2048,2048))
+    S_x = []
+    S_y = []
+
+    for n1 in Nx :
+        for n2 in Ny:
+            
+            im0 = Im0[n2:n2+Del,n1:n1+Del]
+            imk = Imk[n2:n2+Del,n1:n1+Del]
+            xoff, yoff, exoff, eyoff = chi2_shift(im0,imk)
+            print(xoff, yoff)
+            shifts_x[n2:n2+Del,n1:n1+Del] = xoff
+            shifts_y[n2:n2+Del,n1:n1+Del] = yoff
+            return shifts_x, shifts_y

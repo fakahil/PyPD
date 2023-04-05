@@ -1,6 +1,5 @@
 import time
-import imreg_dft
-import pyfits
+
 import tools
 import aperture
 import PD
@@ -14,8 +13,7 @@ from astropy.io import fits
 import argparse
 import telescope
 from telescope import *
-
-from tools import imreg, apo2d
+from tools import *
 from aperture import *
 from PD import *
 from noise import *
@@ -144,56 +142,30 @@ class patch_pd(object):
             hdu = fits.PrimaryHDU(self.output_mtf)
             hdu.writeto(self.output_mtf,overwrite=True)
      else:   
+            print('Initialising parallel computation')
+            t0 = time.time()
             self.patch = tools.prepare_patches(self.data,self.Del,self.Im0,self.Imk)
             n_workers = min(6, os.cpu_count())
+            print(f'number of workers is {n_workers}')
             self.args_list = [i for i in range(len(self.patch))]
             self.results_parallel = list(processing.MP.simultaneous(self.run_pd, self.args_list, workers=n_workers))
+            dt = (time.time() - t0)/60.
+            print(f'Time spent in fitting the wavefront error is: {dt: .3f}min')
 
-    def plot_results(self,output):
+    def plot_results(self):
 
-         # change here the format of the output
          if not self.parallel:
             data_mtf = self.output_MTF
             data_wfe = self.output_WF
 
          if self.parallel:
-            ## call here the stitching function
             data_mtf,data_wfe = tools.stitch_patches(self.results_parallel,self.Del)
+            hdu = fits.PrimaryHDU(data_mtf)
+            hdu.writeto(self.output_mtf,overwrite=True)
+            hdu = fits.PrimaryHDU(data_wfe)
+            hdu.writeto(self.output_wf,overwrite=True)
+         tools.plot_mtf_wf(data_wfe,data_mtf)
 
-
-         fig, ax = plt.subplots(1,2,figsize=(10,10))
-        
-         im=ax[1].imshow(data_mtf,vmin=0,vmax=1,origin='lower',cmap='gray')
-         ax[1].set_title('MTF')
-         divider = make_axes_locatable(ax[1])
-         cax = divider.append_axes('right',pad=0.05,size=0.03)
-         cbar1 = plt.colorbar(im,cax=cax)
-         cbar1.ax.tick_params(labelsize=16)
-         cbar1.set_label('MTF',fontsize=16)
-         ax[1].set_xlabel('[Pixels]')
-         major_ticks = np.arange(0, 2048,350)
-         major_ticks_y = np.arange(0, 2048,350)
-         ax[1].set_xticks(major_ticks)
-         ax[1].set_yticks(major_ticks_y)
-         ax[1].tick_params(labelsize=4)
-
-
-
-         im2=ax[0].imshow(data_wfe/(2*np.pi),vmin=-0.5,vmax=1.4,origin='lower',cmap='gray')
-         ax[0].set_xlabel('[Pixels]')
-         ax[0].set_title('WF error[$\lambda$]')
-         divider2 = make_axes_locatable(ax[0])
-         cax2 = divider2.append_axes('right',pad=0.05,size=0.03) #size is the width of the color bar and pad is the fraction of the new axis
-         cbar2=plt.colorbar(im2,cax=cax2)
-         cbar2.ax.tick_params(labelsize=16)
-         ax[0].tick_params(labelbottom=False,labelsize=16)
-         plt.subplots_adjust(wspace=None, hspace=0.1)
-         ax[0].set_xticks(major_ticks)
-         ax[0].set_yticks(major_ticks_y)
-         ax[0].set_ylabel('[Pixels]')
-         #plt.subplots_adjust(wspace=None, hspace=-0.1)
-         #plt.axis('off')
-         plt.savefig(output,dpi=300)
          
 if (__name__ == '__main__'):
  parser = argparse.ArgumentParser(description='PD on sub-fields')
@@ -202,10 +174,10 @@ if (__name__ == '__main__'):
  parser.add_argument('-d','--Del', help='Del',default=265)
  parser.add_argument('-ow','--ow', help='output_WFE')
  parser.add_argument('-om','--om', help='output MTF')
- parser.add_argument('-r','--res', help='results')
+
  parser.add_argument('-p','--parallel',choices=['True','False'],default=True)
  parsed = vars(parser.parse_args())
  st = patch_pd(pd_data='{0}'.format(parsed['input']),Del=int(parsed['Del']),co_num=int(parsed['Z']),output_wf='{0}'.format(parsed['ow']),output_mtf='{0}'.format(parsed['om']),parallel=bool(parsed['parallel']))
  st.fit_patch()
- st.plot_results(output='{0}'.format(parsed['res']))
+ st.plot_results()
    
